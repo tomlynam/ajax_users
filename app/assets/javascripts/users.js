@@ -19,6 +19,9 @@ $(document).ready(function() {
               row += '<td>' + name1 + '</td>';
               row += '<td>' + name2 + '</td>';
               row += '<td>' + phone + '</td>';
+              row += '<td>'
+              row += '<button class="btn btn-primary show">Show</button>';
+              row += '</td>';
               row += '</tr>';
               tbody.append(row);
 				});
@@ -31,6 +34,40 @@ $(document).ready(function() {
 
 	}
 
+	// GET /users/id - lists a single user
+	$(document).on('click', '.show', function() {
+			var id = $(this).closest('tr').data().id;
+			location.pathname = '/users/' + id;
+		})
+
+
+	var re = /\/users\/\d+/;
+	if (location.pathname.match(re)) {
+		var panel = $('#panel');
+		var id = panel.data().id;
+		$.ajax({
+			url: baseUrl + '/' + id,
+			type: 'GET',
+			dataType: 'JSON'
+		}).done( function(data) {
+			var user = data.user;
+			panel.children('#heading').html(user.name);
+			var list = $('#user');
+			var name1 = '<li>First Name: ' + user.first_name + '</li>';
+			var name2 = '<li>Last Name: ' + user.last_name + '</li>';
+			var phone = '<li>Phone Number: ' + user.phone_number + '</li>';
+			list.append(name1);
+			list.append(name2);
+			list.append(phone);
+		})
+	}
+
+
+	// POST /users
+		// POST DATA:
+		//  user[first_name] - required
+		//  user[last_name] - required
+		//  user[phone_number] - optional 
 	$('#new_user').on('submit', function(e) {
 		e.preventDefault();
 		$.ajax({
@@ -42,13 +79,5 @@ $(document).ready(function() {
 			location.pathname = '/';
 		});
 	})
-
-	// TODO 
-	// GET /users/id - lists a single user
-	// POST /users
-	// POST DATA:
-	//  user[first_name] - required
-	//  user[last_name] - required
-	//  user[phone_number] - optional 
-
+	
 })
